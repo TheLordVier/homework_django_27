@@ -1,6 +1,7 @@
 from rest_framework import serializers
+from rest_framework.relations import SlugRelatedField
 
-from ads.models import Ad, Category
+from ads.models import Ad, Category, Selection
 from users.models import User
 from users.serializers import UserDetailSerializer
 
@@ -55,4 +56,58 @@ class AdDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ad
+        fields = "__all__"
+
+
+class SelectionSerializer(serializers.ModelSerializer):
+    """
+    Клаcс-сериализатор подборка-объявлений
+    """
+
+    class Meta:
+        model = Selection
+        fields = "__all__"
+
+
+class SelectionDetailSerializer(serializers.ModelSerializer):
+    """
+    Клаcс-сериализатор конкретной подборки-объявлений
+    """
+    items = AdSerializer(many=True)
+
+    class Meta:
+        model = Selection
+        fields = "__all__"
+
+
+class SelectionListSerializer(serializers.ModelSerializer):
+    """
+    Клаcс-сериализатор списка подборки-объявлений
+    """
+    owner = serializers.SlugRelatedField(
+        queryset=User.objects.all(),
+        slug_field="username"
+    )
+
+    class Meta:
+        model = Selection
+        fields = ["name", "owner"]
+
+
+class SelectionCreateSerializer(serializers.ModelSerializer):
+    """
+    Клаcс-сериализатор создания подборки-объявлений
+    """
+    owner = SlugRelatedField(
+        slug_field="username",
+        read_only=True
+    )
+
+    def create(self, validated_data):
+        request = self.context.get("request")
+        validated_data["owner"] = request.user
+        return super().create(validated_data)
+
+    class Meta:
+        model = Selection
         fields = "__all__"
