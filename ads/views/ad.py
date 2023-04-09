@@ -3,7 +3,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from ads.models import Ad
 from ads.permissions import IsStaff, IsOwner
-from ads.serializers import AdSerializer, AdListSerializer, AdDetailSerializer
+from ads.serializers import AdSerializer, AdListSerializer, AdDetailSerializer, AdCreateSerializer
 
 
 class AdViewSet(ModelViewSet):
@@ -23,7 +23,7 @@ class AdViewSet(ModelViewSet):
 
     serializers = {
         "list": AdListSerializer,
-        "create": AdListSerializer,
+        "create": AdCreateSerializer,
         "retrieve": AdDetailSerializer,
     }
 
